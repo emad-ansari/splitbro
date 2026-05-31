@@ -8,9 +8,9 @@ export default function OnboardingScreen() {
 			<Text className="text-2xl font-semibold mb-4 ">
 				This is onboarding screen.
 			</Text>
-			<TouchableOpacity onPress = {() => router.push('/(auth)/signin')}>
+			<TouchableOpacity onPress = {() => router.push('/(tabs)/home')}>
 				<Text className="text-lg font-semibold mb-4 bg-red-400 p-4 rounded-lg">
-					Got to Login Screen
+					Go to home screen
 				</Text>
 			</TouchableOpacity>
 		</View>

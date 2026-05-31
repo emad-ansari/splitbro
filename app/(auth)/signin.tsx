@@ -2,6 +2,7 @@ import googleIcon from "@/assets/images/google-icon.png";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Mail01Icon, SquareLock02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
 	ActivityIndicator,
@@ -14,8 +15,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignInScreen() {
+    const router = useRouter();
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(false);
+
 
 	return (
 		<SafeAreaView className="flex-1 bg-background">
@@ -24,6 +27,7 @@ export default function SignInScreen() {
 				<TouchableOpacity
 					className="bg-surface w-10 h-10 rounded-full flex items-center justify-center  border border-white "
 					activeOpacity={0.7}
+                    onPress = {() => router.push("/(welcome)/onboarding")}
 				>
 					<FontAwesome6
 						name="chevron-left"

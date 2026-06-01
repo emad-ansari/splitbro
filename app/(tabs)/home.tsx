@@ -19,10 +19,13 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
+
+	const router = useRouter();
 	return (
 		<SafeAreaView className="flex-1 bg-background" edges={["top"]}>
 			<ScrollView
@@ -208,7 +211,7 @@ export default function HomeScreen() {
 						<Text className="uppercase font-semibold text-sm text-muted">
 							Your Groups
 						</Text>
-						<TouchableOpacity>
+						<TouchableOpacity onPress = {() => router.push('/(tabs)/groups')}>
 							<Text className="text-muted font-medium text-sm ">
 								See all
 							</Text>

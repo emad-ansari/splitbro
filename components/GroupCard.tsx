@@ -4,6 +4,7 @@ import {
 	groupCategoryColors,
 	groupIcon,
 } from "@/utils/constants";
+import { useRouter } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { UserStack } from "./UserStack";
 
@@ -11,10 +12,14 @@ interface GroupCardProps {
 	group: Group;
 }
 export const GroupCard = ({ group }: GroupCardProps) => {
+	const router = useRouter();
 	return (
 		<TouchableOpacity
 			className="p-5 border border-border rounded-4xl flex-1 gap-5  bg-white drop-shadow-sm"
 			activeOpacity={0.8}
+			onPress={() =>
+				router.push(`/(tabs)/groups/group-details?id=${group.id}`)
+			}
 		>
 			<View className="flex-row items-center gap-6 justify-between">
 				<View className="flex-row items-center gap-2">

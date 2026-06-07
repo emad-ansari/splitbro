@@ -2,7 +2,7 @@ import { Activity, getActivityIcon } from "@/utils/constants";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import { Text, View } from "react-native";
 
-export const RecentActivityCard = ({
+export const ExpenseCard = ({
 	title,
 	groupName,
 	paidBy,

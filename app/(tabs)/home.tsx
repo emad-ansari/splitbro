@@ -1,7 +1,8 @@
 import UserAvatar from "@/assets/images/avatar.png";
+import { CardBackground } from "@/components/CardBackground";
 import { GroupCard } from "@/components/GroupCard";
-import { PendingSettlementCard } from "@/components/PendingSettlementCard";
-import { RecentActivityCard } from "@/components/RecentActivityCard";
+import { MemberCard } from "@/components/MemberCard";
+import { ExpenseCard } from "@/components/ExpenseCard"
 import {
 	groups,
 	pendingSettlements,
@@ -66,14 +67,7 @@ export default function HomeScreen() {
 
 				{/* Hero Card */}
 				<View className="relative flex-col gap-5 rounded-[32px] overflow-hidden p-6 mb-5">
-					<LinearGradient
-						colors={["#324D5E", "#68A1C4"]}
-						className="absolute inset-0 rounded-[32px]"
-						start={{ x: 0, y: 0 }}
-						end={{ x: 1, y: 1 }}
-					/>
-					<View className="absolute h-48 w-48 rounded-full bg-circle/30 -right-8 -top-8  " />
-					<View className="absolute h-48 w-48 rounded-full bg-circle/30  -bottom-8 -left-12  " />
+					<CardBackground />
 					<View className="flex-col justify-between gap-2">
 						<Text className="uppercase text-secondary text-sm font-semibold tracking-wider">
 							Net balance
@@ -248,7 +242,7 @@ export default function HomeScreen() {
 
 					<View className="flex gap-3">
 						{recentActivities.map((activity) => (
-							<RecentActivityCard
+							<ExpenseCard
 								key={activity.id}
 								id={activity.id}
 								title={activity.title}
@@ -272,7 +266,7 @@ export default function HomeScreen() {
 					</View>
 					<View className="flex-col gap-3">
 						{pendingSettlements.map((item) => (
-							<PendingSettlementCard
+							<MemberCard
 								key={item.id}
 								id={item.id}
 								username={item.username}

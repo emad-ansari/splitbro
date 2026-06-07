@@ -3,14 +3,14 @@ import { Notification01Icon, SentIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import { Text, TouchableOpacity, View } from "react-native";
 
-export const PendingSettlementCard = ({
+export const MemberCard = ({
 	id,
 	username,
 	amount,
 	balanceType,
 }: PendingSettlement) => {
 	return (
-		<View className="flex-row items-center p-5 rounded-4xl shadow-md border border-border bg-white justify-between">
+		<TouchableOpacity className="flex-row items-center p-5 rounded-4xl shadow-md border border-border bg-white justify-between" activeOpacity={0.8}>
 			<View className="flex-row items-center justify-between gap-2">
 				<View
 					className={`flex items-center justify-center  h-14 w-14 rounded-full  ${balanceType === "receivable" ? "bg-green-100" : "bg-red-100"}`}
@@ -53,6 +53,6 @@ export const PendingSettlementCard = ({
 					</Text>
 				</TouchableOpacity>
 			</View>
-		</View>
+		</TouchableOpacity>
 	);
 };

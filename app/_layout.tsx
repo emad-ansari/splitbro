@@ -1,10 +1,10 @@
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -29,12 +29,14 @@ export default function RootLayout() {
 
 	return (
 		<SafeAreaProvider>
-      <StatusBar style = "dark"/>
-			<Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(welcome)" />
-        <Stack.Screen name="(tabs)" />
-				<Stack.Screen name="(auth)" />
-			</Stack>
+			<StatusBar style="dark" />
+			<GestureHandlerRootView>
+				<Stack screenOptions={{ headerShown: false }}>
+					<Stack.Screen name="(welcome)" />
+					<Stack.Screen name="(tabs)" />
+					<Stack.Screen name="(auth)" />
+				</Stack>
+			</GestureHandlerRootView>
 		</SafeAreaProvider>
 	);
 }

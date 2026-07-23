@@ -1,4 +1,3 @@
-import { ContactPickerSheet } from "@/components/ContactPickerSheet";
 import { groupCategories, GroupCategory, groupIcon } from "@/utils/constants";
 import { Feather } from "@expo/vector-icons";
 import BottomSheet from "@gorhom/bottom-sheet";
@@ -6,7 +5,7 @@ import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
 import * as Contacts from "expo-contacts";
 import { useRouter } from "expo-router";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -43,7 +42,6 @@ const selectedMembers = [
 export default function CreateGroupScreen() {
   const router = useRouter();
   const contactPickerSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ["70%"], []);
 
   const [selectedCategory, setSelectedCategory] =
     useState<GroupCategory>("Home");
@@ -105,11 +103,10 @@ export default function CreateGroupScreen() {
         <MembersSection contactPickerSheetRef={contactPickerSheetRef} />
 
         {/* Contact picker bottom sheet */}
-        <ContactPickerSheet
+        {/* <ContactPickerSheet
           contactPickerSheetRef={contactPickerSheetRef}
           snapPoints={snapPoints}
-        />
-        
+        /> */}
       </View>
     </SafeAreaView>
   );
@@ -130,6 +127,8 @@ interface MemberSectionProps {
 export const MembersSection = ({
   contactPickerSheetRef,
 }: MemberSectionProps) => {
+  const router = useRouter();
+
   const handleAddMember = async () => {
     const { status } = await Contacts.requestPermissionsAsync();
 
@@ -138,7 +137,7 @@ export const MembersSection = ({
       return;
     }
 
-    contactPickerSheetRef.current?.expand();
+    router.push("/contact-picker");
   };
 
   return (

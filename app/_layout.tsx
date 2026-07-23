@@ -10,33 +10,37 @@ import "../global.css";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-	const [loaded] = useFonts({
-		GeistRegular: require("../assets/fonts/Geist-Regular.otf"),
-		GeistMedium: require("../assets/fonts/Geist-Medium.otf"),
-		GeistSemiBold: require("../assets/fonts/Geist-SemiBold.otf"),
-		GeistBold: require("../assets/fonts/Geist-Bold.otf"),
-	});
+  const [loaded] = useFonts({
+    GeistRegular: require("../assets/fonts/Geist-Regular.otf"),
+    GeistMedium: require("../assets/fonts/Geist-Medium.otf"),
+    GeistSemiBold: require("../assets/fonts/Geist-SemiBold.otf"),
+    GeistBold: require("../assets/fonts/Geist-Bold.otf"),
+  });
 
-	useEffect(() => {
-		if (loaded) {
-			SplashScreen.hideAsync();
-		}
-	}, [loaded]);
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
 
-	if (!loaded) {
-		return null;
-	}
+  if (!loaded) {
+    return null;
+  }
 
-	return (
-		<SafeAreaProvider>
-			<StatusBar style="dark" />
-			<GestureHandlerRootView>
-				<Stack screenOptions={{ headerShown: false }}>
-					<Stack.Screen name="(welcome)" />
-					<Stack.Screen name="(tabs)" />
-					<Stack.Screen name="(auth)" />
-				</Stack>
-			</GestureHandlerRootView>
-		</SafeAreaProvider>
-	);
+  return (
+    <SafeAreaProvider>
+      <StatusBar style="dark" />
+      <GestureHandlerRootView>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(welcome)" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen
+            name="contact-picker"
+            options={{ presentation: "modal" }}
+          />
+        </Stack>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
+  );
 }

@@ -2,7 +2,8 @@ import FlatmateIcon from "@/assets/icons/house.png";
 import { CardBackground } from "@/components/CardBackground";
 import { ExpenseCard } from "@/components/ExpenseCard";
 import { MemberCard } from "@/components/MemberCard";
-import { pendingSettlements, recentActivities } from "@/utils/constants";
+
+import { pendingSettlements, recentActivities } from "@/utils/data";
 import { Feather } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useMemo, useRef } from "react";

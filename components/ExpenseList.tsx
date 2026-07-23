@@ -1,5 +1,5 @@
 import EmptyListItem from "@/assets/icons/empty-folder.png";
-import { recentActivities as expenses } from "@/utils/constants";
+import { recentActivities as expenses } from "@/utils/data";
 import { FlatList, Image, Text, View } from "react-native";
 import { ExpenseCard } from "./ExpenseCard";
 

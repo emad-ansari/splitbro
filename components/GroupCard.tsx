@@ -18,7 +18,7 @@ export const GroupCard = ({ group }: GroupCardProps) => {
 			className="p-5 border border-border rounded-4xl flex-1 gap-5  bg-white drop-shadow-sm"
 			activeOpacity={0.8}
 			onPress={() =>
-				router.push(`/(tabs)/groups/group-details?id=${group.id}`)
+				router.push(`/(groups)/?id=${group.id}`)
 			}
 		>
 			<View className="flex-row items-center gap-6 justify-between">

@@ -527,3 +527,11 @@ export const pendingSettlements: PendingSettlement[] = [
 ];
 
 export const groupFilterBadges = ["All", "You owe", "Owes you", "Settled"];
+
+
+export interface Contact {
+	id: string;
+	name: string;
+	phoneNumber?: string;
+	avatar?: string;
+}

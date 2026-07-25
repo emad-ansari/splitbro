@@ -8,8 +8,7 @@ import SearchBar from "@/components/contacts/SearchBar";
 import SectionHeader from "@/components/contacts/SectionHeader";
 import SelectedMember from "@/components/contacts/SelectedMember";
 
-import { Contact } from "@/utils/constants";
-import { contacts as initialContacts } from "@/utils/data";
+import { useContactStore } from "@/store/useContactStore";
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,7 +16,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ContactPickerScreen() {
   const [search, setSearch] = useState("");
 
-  const [contacts, setContacts] = useState<Contact[]>(initialContacts);
+  const contacts = useContactStore((state) => state.contacts);
+  const toggleSelected = useContactStore((state) => state.toggleSelected)
 
   const selectedMembers = contacts.filter((item) => item.isSelected);
 
@@ -34,25 +34,14 @@ export default function ContactPickerScreen() {
 
   const inviteContacts = filteredContacts.filter((item) => !item.onApp);
 
-  function toggleContact(id: string) {
-    setContacts((prev) =>
-      prev.map((contact) =>
-        contact.id === id
-          ? {
-              ...contact,
-              isSelected: !contact.isSelected,
-            }
-          : contact,
-      ),
-    );
-  }
+
 
   return (
     <SafeAreaView className="flex-1 bg-background">
       {/* Header */}
 
       <View className="flex-row items-center justify-between px-6 pt-4 pb-3">
-        <TouchableOpacity onPress = {() => router.back()}>
+        <TouchableOpacity onPress={() => router.back()}>
           <HugeiconsIcon icon={ArrowLeft01Icon} size={22} strokeWidth={1.5} />
         </TouchableOpacity>
         <Text className="text-2xl font-semibold text-primary">
@@ -92,7 +81,7 @@ export default function ContactPickerScreen() {
                   key={member.id}
                   name={member.name}
                   avatarUri={member.avatarUri}
-                  onRemove={() => toggleContact(member.id)}
+                  onRemove={() => toggleSelected(member.id)}
                 />
               ))}
             </ScrollView>
@@ -105,7 +94,7 @@ export default function ContactPickerScreen() {
           <ContactCard
             key={contact.id}
             contact={contact}
-            onPress={() => toggleContact(contact.id)}
+            onPress={() => toggleSelected(contact.id)}
           />
         ))}
 

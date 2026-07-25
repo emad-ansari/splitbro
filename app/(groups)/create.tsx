@@ -1,11 +1,13 @@
+import SelectedMember from "@/components/contacts/SelectedMember";
+import { useContactStore } from "@/store/useContactStore";
 import { groupCategories, GroupCategory, groupIcon } from "@/utils/constants";
 import { Feather } from "@expo/vector-icons";
-import BottomSheet from "@gorhom/bottom-sheet";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import { AddSquareIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react-native";
 
 import * as Contacts from "expo-contacts";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Image,
   ScrollView,
@@ -16,32 +18,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const selectedMembers = [
-  {
-    id: "1",
-    name: "Rahul Verma",
-    avatar: "https://i.pravatar.cc/150?img=1",
-  },
-  {
-    id: "2",
-    name: "Aman Raj",
-    avatar: "https://i.pravatar.cc/150?img=2",
-  },
-  {
-    id: "3",
-    name: "Sneha Sharma",
-    avatar: "https://i.pravatar.cc/150?img=3",
-  },
-  {
-    id: "4",
-    name: "Riya Patel",
-    avatar: "https://i.pravatar.cc/150?img=4",
-  },
-];
-
 export default function CreateGroupScreen() {
   const router = useRouter();
-  const contactPickerSheetRef = useRef<BottomSheet>(null);
 
   const [selectedCategory, setSelectedCategory] =
     useState<GroupCategory>("Home");
@@ -100,34 +78,26 @@ export default function CreateGroupScreen() {
         </View>
 
         {/* Member section */}
-        <MembersSection contactPickerSheetRef={contactPickerSheetRef} />
+        <MembersSection />
 
-        {/* Contact picker bottom sheet */}
-        {/* <ContactPickerSheet
-          contactPickerSheetRef={contactPickerSheetRef}
-          snapPoints={snapPoints}
-        /> */}
+        {/* Create group button */}
+
+        <TouchableOpacity className="mt-4 flex-row gap-2 items-center justify-center bg-button h-[50px] px-4 rounded-3xl">
+          <HugeiconsIcon icon = {AddSquareIcon} size = {20} strokeWidth={1.5} color = "#ffffff"/>
+          <Text className="text-md font-medium  text-white">Create Group</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
 
-const getInitials = (name: string) => {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-};
-
-interface MemberSectionProps {
-  contactPickerSheetRef: React.RefObject<BottomSheetMethods | null>;
-}
-export const MembersSection = ({
-  contactPickerSheetRef,
-}: MemberSectionProps) => {
+export const MembersSection = () => {
   const router = useRouter();
+
+  const contacts = useContactStore((state) => state.contacts);
+  const toggleSelected = useContactStore((state) => state.toggleSelected);
+
+  const selectedMembers = contacts.filter((contact) => contact.isSelected);
 
   const handleAddMember = async () => {
     const { status } = await Contacts.requestPermissionsAsync();
@@ -163,27 +133,12 @@ export const MembersSection = ({
       >
         <View className="flex-row items-start gap-4">
           {selectedMembers.map((member) => (
-            <View key={member.id} className="items-center w-20">
-              {member.avatar ? (
-                <Image
-                  source={{ uri: member.avatar }}
-                  className="w-16 h-16 rounded-full"
-                />
-              ) : (
-                <View className="w-16 h-16 rounded-full bg-surface items-center justify-center border border-border">
-                  <Text className="text-primary font-semibold text-base">
-                    {getInitials(member.name)}
-                  </Text>
-                </View>
-              )}
-
-              <Text
-                numberOfLines={1}
-                className="text-xs text-primary font-medium mt-2 text-center"
-              >
-                {member.name.split(" ")[0]}
-              </Text>
-            </View>
+            <SelectedMember
+              key={member.id}
+              name={member.name}
+              avatarUri={member.avatarUri}
+              onRemove={() => toggleSelected(member.id)}
+            />
           ))}
 
           {/* Add Member */}

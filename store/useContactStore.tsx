@@ -1,10 +1,10 @@
 import { Contact } from "@/utils/constants";
+import { contacts as initialContacts } from "@/utils/data";
 import { create } from "zustand";
 
 type ContactStore = {
   contacts: Contact[];
   searchQuery: string;
-  selectedIds: string[];
   isLoading: boolean;
 
   setSearchQuery: (query: string) => void;
@@ -14,11 +14,9 @@ type ContactStore = {
 };
 
 export const useContactStore = create<ContactStore>((set, get) => ({
-  contacts: [],
+  contacts: initialContacts,
   searchQuery: "",
-  selectedIds: [],
   isLoading: false,
-  permission: "unknown",
 
   loadContacts: async () => {
     set({ isLoading: true });
@@ -30,16 +28,19 @@ export const useContactStore = create<ContactStore>((set, get) => ({
 
   setSearchQuery: (query) => set({ searchQuery: query }),
 
-  toggleSelected: (id) => {
-    const { selectedIds } = get();
+  toggleSelected: (id: string) => {
     set({
-      selectedIds: selectedIds.includes(id)
-        ? selectedIds.filter((existing) => existing !== id)
-        : [...selectedIds, id],
+      contacts: get().contacts.map((contact) =>
+        contact.id === id
+          ? { ...contact, isSelected: !contact.isSelected }
+          : contact,
+      ),
     });
   },
 
-  clearSelection: () => set({ selectedIds: [] }),
+  clearSelection: () => {
+    
+  },
 }));
 
 // Derived, memo-free selectors kept as plain functions so components

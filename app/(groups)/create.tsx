@@ -82,7 +82,7 @@ export default function CreateGroupScreen() {
 
         {/* Create group button */}
 
-        <TouchableOpacity className="mt-4 flex-row gap-2 items-center justify-center bg-button h-[50px] px-4 rounded-3xl">
+        <TouchableOpacity className="mt-4 flex-row gap-2 items-center justify-center bg-button h-[50px] px-4 rounded-3xl" activeOpacity={0.8}>
           <HugeiconsIcon icon = {AddSquareIcon} size = {20} strokeWidth={1.5} color = "#ffffff"/>
           <Text className="text-md font-medium  text-white">Create Group</Text>
         </TouchableOpacity>

@@ -21,37 +21,37 @@ export default function GroupsScreen() {
               Manage shared expenses
             </Text>
           </View>
-          <View className=" rounded-2xl p-px bg-button">
+          
             <TouchableOpacity
-              className="flex-row items-center justify-center gap-1 shadow-md bg-primary px-4 py-3  rounded-2xl"
+              className="flex-row items-center justify-center  shadow-md bg-button w-14 h-14   rounded-full"
               activeOpacity={0.8}
               onPress={() => router.push("/(groups)/create")}
             >
               <HugeiconsIcon
                 icon={Add01Icon}
                 color="white"
-                size={16}
+                size={22}
                 strokeWidth={2}
               />
-              <Text className="text-white font-medium text-sm">
-                Create Group
-              </Text>
             </TouchableOpacity>
-          </View>
+          
         </View>
 
+        <View>
+
+        </View>
         {/* filter badge */}
 
-        <View className="flex-row items-center justify-between  px-1 py-1 rounded-full">
+        <View className="flex-row items-center  gap-2  rounded-full">
           {groupFilterBadges.map((badge) => (
             <TouchableOpacity
               key={badge}
-              className={`rounded-full px-4 py-2  ${currentFilter === badge ? "bg-button" : "bg-surface"}`}
+              className={`rounded-full px-6 py-3  ${currentFilter === badge ? "bg-button" : "bg-surface"}`}
               activeOpacity={0.8}
               onPress={() => setCurrentFilter(badge)}
             >
               <Text
-                className={`text-sm font-medium ${currentFilter === badge ? "text-white " : "text-muted"}`}
+                className={`text-sm  font-medium ${currentFilter === badge ? "text-white " : "text-muted"}`}
               >
                 {badge}
               </Text>

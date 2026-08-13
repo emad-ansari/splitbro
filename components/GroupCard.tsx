@@ -1,12 +1,10 @@
 import {
-  getBalanceType,
   type Group,
   groupCategoryColors,
   groupIcon,
 } from "@/utils/constants";
 import { useRouter } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { UserStack } from "./UserStack";
 
 interface GroupCardProps {
   group: Group;
@@ -19,55 +17,42 @@ export const GroupCard = ({ group }: GroupCardProps) => {
 
   return (
     <TouchableOpacity
-      className="p-5 border border-border rounded-3xl gap-4 bg-white shadow-sm"
+      className="flex-row items-center justify-between p-4 rounded-3xl border border-border bg-white shadow-xs"
       activeOpacity={0.85}
       onPress={() => router.push(`/(groups)/${group.id}` as any)}
     >
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-3 flex-1">
-          <View
-            className="rounded-2xl w-13 h-13 flex items-center justify-center p-2.5"
-            style={{
-              backgroundColor: groupCategoryColors[group.category] || "#F1F5F9",
-            }}
-          >
-            <Image
-              source={groupIcon[group.category]}
-              className="w-7 h-7"
-              resizeMode="contain"
-            />
-          </View>
-          <View className="flex-1">
-            <Text
-              className="text-primary font-semibold text-lg leading-6"
-              numberOfLines={1}
-            >
-              {group.name}
-            </Text>
-            <Text className="text-muted font-normal text-xs">
-              {group.membersList.length} members
-            </Text>
-          </View>
-        </View>
-
+      {/* Left Column: Icon + Name + Subtitle */}
+      <View className="flex-row items-center gap-3.5 flex-1 pr-3">
         <View
-          className="rounded-full px-3 py-1 items-center justify-center"
+          className="rounded-2xl w-12 h-12 flex items-center justify-center p-2.5"
           style={{
             backgroundColor: groupCategoryColors[group.category] || "#F1F5F9",
           }}
         >
-          <Text className="text-[11px] font-medium text-primary">
-            {group.category}
+          <Image
+            source={groupIcon[group.category]}
+            className="w-7 h-7"
+            resizeMode="contain"
+          />
+        </View>
+        <View className="flex-1">
+          <Text
+            className="text-primary font-semibold text-base leading-5"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {group.name}
+          </Text>
+          <Text className="text-muted font-normal text-xs mt-0.5">
+            {group.membersList.length} members • {group.lastActivity}
           </Text>
         </View>
       </View>
 
-      <View>
-        <Text className="font-semibold uppercase text-muted text-[11px] tracking-wider mb-0.5">
-          {getBalanceType[group.balanceType]}
-        </Text>
+      {/* Right Column: Net Balance + Status Label */}
+      <View className="items-end justify-center">
         <Text
-          className={`font-bold text-2xl ${
+          className={`font-bold text-lg ${
             isSettled
               ? "text-primary"
               : isReceivable
@@ -81,12 +66,16 @@ export const GroupCard = ({ group }: GroupCardProps) => {
             ? `+₹${group.amount.toLocaleString()}`
             : `-₹${group.amount.toLocaleString()}`}
         </Text>
-      </View>
-
-      <View className="flex-row items-center justify-between pt-1 border-t border-slate-100">
-        <UserStack users={group.membersList} />
-        <Text className="text-xs text-muted font-normal">
-          {group.lastActivity}
+        <Text
+          className={`text-[11px] font-medium mt-0.5 ${
+            isSettled
+              ? "text-muted font-normal"
+              : isReceivable
+              ? "text-emerald-600"
+              : "text-red-500"
+          }`}
+        >
+          {isSettled ? "settled up" : isReceivable ? "you get back" : "you owe"}
         </Text>
       </View>
     </TouchableOpacity>

@@ -20,10 +20,6 @@ export const useContactStore = create<ContactStore>((set, get) => ({
 
   loadContacts: async () => {
     set({ isLoading: true });
-
-    // console.log("contact data: ", data);
-
-    // set({ contacts, permission, isLoading: false });
   },
 
   setSearchQuery: (query) => set({ searchQuery: query }),

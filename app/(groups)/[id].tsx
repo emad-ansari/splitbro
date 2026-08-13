@@ -1,13 +1,12 @@
 import FlatmateIcon from "@/assets/icons/house.png";
+import { RenderBackdrop } from "@/components/BottomSheetRenderBackdrop";
 import { CardBackground } from "@/components/CardBackground";
 import { ExpenseCard } from "@/components/ExpenseCard";
 import { MemberCard } from "@/components/MemberCard";
-
-import { pendingSettlements, recentActivities } from "@/utils/data";
+import { groups, PendingSettlement } from "@/utils/constants";
+import { contacts, pendingSettlements, recentActivities } from "@/utils/data";
 import { Feather } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { useMemo, useRef } from "react";
-
 import {
   Add01Icon,
   Delete02Icon,
@@ -20,21 +19,41 @@ import {
   Wallet01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
-
-import { RenderBackdrop } from "@/components/BottomSheetRenderBackdrop";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useMemo, useRef } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GroupDetails() {
   const router = useRouter();
-  const snapPoints = useMemo(() => ["35%"], []);
+  const { id } = useLocalSearchParams();
+  const snapPoints = useMemo(() => ["50%"], []);
   const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // Find active group data by ID or fallback to first group
+  const currentGroup =
+    groups.find((g) => g.id === (Array.isArray(id) ? id[0] : id)) || groups[0];
+
+  const groupMembersCount = currentGroup?.membersList?.length || 4;
+  const isReceivable = currentGroup.balanceType === "receivable";
+  const isSettled = currentGroup.balanceType === "settled";
+
+  // Map contacts to add avatar URLs to pending settlements
+  const extendedPendingSettlements: (PendingSettlement & {
+    avatarUri?: string;
+  })[] = pendingSettlements.map((item) => {
+    const matchedContact = contacts.find(
+      (c) => c.name.toLowerCase() === item.username.toLowerCase(),
+    );
+    return {
+      ...item,
+      avatarUri: matchedContact?.avatarUri,
+    };
+  });
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       {/* Header */}
-
       <View className="flex-row items-center justify-between px-6 mb-6">
         <TouchableOpacity
           className="bg-surface rounded-full w-12 h-12 flex items-center justify-center"
@@ -44,7 +63,9 @@ export default function GroupDetails() {
           <Feather name="chevron-left" size={20} color="#314B5E" />
         </TouchableOpacity>
         <View className="flex-row items-center justify-center gap-2">
-          <Text className="text-xl font-semibold text-primary ">Flatmates</Text>
+          <Text className="text-xl font-semibold text-primary">
+            {currentGroup.name}
+          </Text>
           <Image source={FlatmateIcon} className="w-5 h-5" />
         </View>
         <TouchableOpacity
@@ -55,77 +76,98 @@ export default function GroupDetails() {
           <Feather name="more-horizontal" size={20} color="#314B5E" />
         </TouchableOpacity>
       </View>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 10 }}
+        contentContainerStyle={{ paddingBottom: 24 }}
       >
         {/* Details */}
         <View className="px-6 flex-1">
-          {/*  Group Details card */}
-          <View className="relative flex-col  rounded-4xl overflow-hidden p-6 mb-5 gap-4 ">
+          {/* Group Details Hero card focusing on YOUR BALANCE */}
+          <View className="relative flex-col rounded-4xl overflow-hidden p-6 mb-5 gap-4 shadow-md">
             <CardBackground />
-            <View className="">
-              <Text className="uppercase text-secondary font-semibold text-sm mb-2">
-                Total Group Balance
+            <View>
+              <Text className="uppercase text-secondary font-semibold text-xs tracking-wider mb-1">
+                Your Net Balance
               </Text>
-              <Text className="text-foreground font-bold text-4xl ">
-                ₹ 1,450.25
+              <Text
+                className={`font-bold text-4xl ${
+                  isSettled
+                    ? "text-primary"
+                    : isReceivable
+                      ? "text-green-500"
+                      : "text-red-500"
+                }`}
+              >
+                {isSettled
+                  ? "₹ 0.00"
+                  : isReceivable
+                    ? `+₹ ${currentGroup.amount.toLocaleString()}`
+                    : `-₹ ${currentGroup.amount.toLocaleString()}`}
+              </Text>
+              <Text className="text-xs text-secondary font-medium mt-1">
+                {isSettled
+                  ? "You are all settled up in this group"
+                  : isReceivable
+                    ? `Overall, you get back ₹${currentGroup.amount.toLocaleString()} in this group`
+                    : `Overall, you owe ₹${currentGroup.amount.toLocaleString()} in this group`}
               </Text>
             </View>
 
-            {/* total spent */}
-            <View className="flex-row items-center justify-between border border-border rounded-4xl  p-5 bg-white shadow-md">
-              <View className="flex-col items-center justify-center gap-2">
-                <View className="rounded-full bg-surface w-12 h-12 flex items-center justify-center ">
+            {/* Total spent & group stats */}
+            <View className="flex-row items-center justify-between border border-border rounded-3xl p-4 bg-white/95 shadow-sm">
+              <View className="flex-col items-center justify-center gap-1 flex-1">
+                <View className="rounded-full bg-surface w-10 h-10 flex items-center justify-center">
                   <HugeiconsIcon
                     icon={UserGroup02Icon}
                     color="#314B5E"
-                    size={24}
+                    size={20}
                   />
                 </View>
-
-                <Text className="text-muted font-regular text-xs ">
-                  Active Members
+                <Text className="text-muted font-normal text-[11px]">
+                  Members
                 </Text>
-                <Text className="text-primary font-semibold text-lg ">4</Text>
+                <Text className="text-primary font-semibold text-base">
+                  {groupMembersCount}
+                </Text>
               </View>
 
               {/* divider */}
-              <View className="w-px flex bg-surface h-full" />
+              <View className="w-px bg-border h-10" />
 
-              <View className="flex-col items-center justify-center gap-2">
-                <View className="rounded-full bg-surface w-12 h-12 flex items-center justify-center ">
+              <View className="flex-col items-center justify-center gap-1 flex-1">
+                <View className="rounded-full bg-surface w-10 h-10 flex items-center justify-center">
                   <HugeiconsIcon
                     icon={Dollar02Icon}
                     color="#314B5E"
-                    size={24}
+                    size={20}
                   />
                 </View>
-
-                <Text className="text-muted font-regular text-xs ">
+                <Text className="text-muted font-normal text-[11px]">
                   Total Spent
                 </Text>
-                <Text className="text-primary font-semibold text-lg ">
-                  ₹1,450.25
+                <Text className="text-primary font-semibold text-base">
+                  ₹{currentGroup.amount.toLocaleString()}
                 </Text>
               </View>
 
               {/* divider */}
-              <View className="w-px flex bg-surface h-full" />
+              <View className="w-px bg-border h-10" />
 
-              <View className="flex-col items-center justify-center gap-2">
-                <View className="rounded-full bg-surface w-12 h-12 flex items-center justify-center ">
+              <View className="flex-col items-center justify-center gap-1 flex-1">
+                <View className="rounded-full bg-surface w-10 h-10 flex items-center justify-center">
                   <HugeiconsIcon
                     icon={Invoice03Icon}
                     color="#314B5E"
-                    size={24}
+                    size={20}
                   />
                 </View>
-
-                <Text className="text-muted font-regular text-xs ">
-                  Total Expenses
+                <Text className="text-muted font-normal text-[11px]">
+                  Expenses
                 </Text>
-                <Text className="text-primary font-semibold text-lg ">20</Text>
+                <Text className="text-primary font-semibold text-base">
+                  {recentActivities.length}
+                </Text>
               </View>
             </View>
           </View>
@@ -133,33 +175,41 @@ export default function GroupDetails() {
           {/* Actions */}
           <View className="flex-row items-center gap-4 justify-between mb-6">
             <TouchableOpacity
-              className="bg-button rounded-3xl h-14 flex-row items-center justify-center px-4 flex-1 gap-1"
+              className="bg-primary rounded-3xl h-14 flex-row items-center justify-center px-4 flex-1 gap-2 shadow-sm"
               activeOpacity={0.9}
+              onPress={() =>
+                router.push({
+                  pathname: "/[id]/add-expense",
+                  params: {
+                    id: currentGroup.id,
+                  },
+                })
+              }
             >
               <HugeiconsIcon icon={Add01Icon} color="white" size={22} />
-              <Text className="text-white font-medium text-sm">
+              <Text className="text-white font-semibold text-sm">
                 Add Expense
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className="bg-button rounded-3xl h-14 flex-row items-center justify-center px-4 gap-1"
+              className="bg-primary rounded-3xl h-14 flex-row items-center justify-center px-5 gap-1 shadow-sm"
               activeOpacity={0.8}
             >
               <HugeiconsIcon icon={Wallet01Icon} color="white" size={22} />
             </TouchableOpacity>
           </View>
 
-          {/*  Recent Activity section */}
+          {/* Recent Activity section */}
           <View className="mb-8">
-            <View className="flex-row items-center justify-between mb-5">
-              <Text className="uppercase font-semibold text-sm text-muted">
+            <View className="flex-row items-center justify-between mb-4">
+              <Text className="uppercase font-semibold text-xs tracking-wider text-muted">
                 Recent Activity
               </Text>
               <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => router.push("/(tabs)/groups/expense-history")}
+                onPress={() => router.push("/expense-history")}
               >
-                <Text className="text-muted font-medium text-sm ">
+                <Text className="text-primary font-semibold text-xs">
                   View all
                 </Text>
               </TouchableOpacity>
@@ -171,7 +221,7 @@ export default function GroupDetails() {
                   key={activity.id}
                   id={activity.id}
                   title={activity.title}
-                  groupName={activity.groupName}
+                  groupName={currentGroup.name}
                   amount={activity.amount}
                   balanceType={activity.balanceType}
                   paidBy={activity.paidBy}
@@ -182,21 +232,22 @@ export default function GroupDetails() {
             </View>
           </View>
 
-          {/* Members Details */}
+          {/* Members Details section */}
           <View>
-            <View className="flex-row items-center justify-between mb-5">
-              <Text className="uppercase font-semibold text-sm text-muted tracking-wide">
-                Members Details (2)
+            <View className="flex-row items-center justify-between mb-4">
+              <Text className="uppercase font-semibold text-xs text-muted tracking-wider">
+                Member Balances ({extendedPendingSettlements.length})
               </Text>
             </View>
             <View className="flex-col gap-3">
-              {pendingSettlements.map((item) => (
+              {extendedPendingSettlements.map((item) => (
                 <MemberCard
                   key={item.id}
                   id={item.id}
                   username={item.username}
                   amount={item.amount}
                   balanceType={item.balanceType}
+                  avatarUri={item.avatarUri}
                 />
               ))}
             </View>
@@ -219,22 +270,24 @@ export default function GroupDetails() {
         }}
         backdropComponent={RenderBackdrop}
       >
-        <BottomSheetView className="flex-1 px-6 ">
+        <BottomSheetView className="flex-1 px-6 pb-6">
           {/* Header */}
-          <View className="items-center py-4">
-            <View className="w-16 h-16 rounded-full bg-surface items-center justify-center mb-3">
-              <Image source={FlatmateIcon} className="w-8 h-8" />
+          <View className="items-center py-3">
+            <View className="w-14 h-14 rounded-full bg-surface items-center justify-center mb-2">
+              <Image source={FlatmateIcon} className="w-7 h-7" />
             </View>
 
             <Text className="text-xl font-semibold text-primary">
-              Flatmates
+              {currentGroup.name}
             </Text>
 
-            <Text className="text-muted">4 Members • Active Group</Text>
+            <Text className="text-muted text-xs font-normal">
+              {groupMembersCount} Members • Active Group
+            </Text>
           </View>
 
           {/* Management */}
-          <Text className="text-xs uppercase text-muted font-semibold mb-2 mt-2">
+          <Text className="text-[11px] uppercase text-muted font-semibold mb-1 mt-2 tracking-wider">
             Group Management
           </Text>
 
@@ -254,12 +307,15 @@ export default function GroupDetails() {
             icon={Invoice03Icon}
             title="View Expense History"
             description="See all group expenses"
-            onPress={() => router.push("/(tabs)/groups/expense-history")}
+            onPress={() => {
+              bottomSheetRef.current?.close();
+              router.push("/(tabs)/groups/expense-history");
+            }}
           />
 
-          <View className="h-px bg-border my-3" />
+          <View className="h-px bg-border my-2" />
 
-          <Text className="text-xs uppercase text-muted font-semibold mb-2">
+          <Text className="text-[11px] uppercase text-muted font-semibold mb-1 tracking-wider">
             Danger Zone
           </Text>
 

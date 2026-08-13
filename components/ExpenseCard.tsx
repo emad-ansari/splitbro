@@ -1,44 +1,72 @@
 import { Activity, getActivityIcon } from "@/utils/constants";
+import { CheckmarkCircle02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import { Text, View } from "react-native";
 
 export const ExpenseCard = ({
-	title,
-	groupName,
-	paidBy,
-	amount,
-	balanceType,
-	timeAgo,
-	category,
-}: Activity) => {
-	return (
-		<View className="flex-row items-center justify-between rounded-4xl p-5 border border-border bg-white shadow-md">
-			<View className="flex-row items-center justify-between gap-2">
-				<View className="w-14 h-14 rounded-full bg-surface flex items-center justify-center">
-					<HugeiconsIcon
-						icon={getActivityIcon[category]}
-						color="#314B5E"
-					/>
-				</View>
-				<View>
-					<Text className="text-md font-medium text-primary">
-						{title}
-					</Text>
-					<Text className="text-sm  text-muted font-regular">
-						{groupName} • Paid by {paidBy}
-					</Text>
-				</View>
-			</View>
-			<View className="flex-col items-end justify-center">
-				<Text
-					className={`font-semibold text-base ${balanceType === "payable" ? "text-red-600" : "text-primary"}`}
-				>
-					{balanceType === "payable" ? `-₹${amount}` : balanceType === "receivable" ? `+₹${amount}` : "done"}
-				</Text>
-				<Text className="text-muted font-regular text-sm">
-					{timeAgo} ago
-				</Text>
-			</View>
-		</View>
-	);
+  title,
+  groupName,
+  paidBy,
+  amount,
+  balanceType,
+  timeAgo,
+  category,
+}: Activity & { category?: any }) => {
+  const isSettlement = balanceType === "settled" || (category as string) === "Settlement";
+
+  return (
+    <View className="flex-row items-center justify-between rounded-3xl p-4 border border-border bg-white shadow-sm">
+      <View className="flex-row items-center gap-3 flex-1">
+        <View
+          className={`w-12 h-12 rounded-full items-center justify-center ${
+            isSettlement ? "bg-emerald-100" : "bg-surface"
+          }`}
+        >
+          {isSettlement ? (
+            <HugeiconsIcon icon={CheckmarkCircle02Icon} color="#059669" size={22} />
+          ) : (
+            <HugeiconsIcon
+              icon={getActivityIcon[category as keyof typeof getActivityIcon]}
+              color="#314B5E"
+              size={20}
+            />
+          )}
+        </View>
+        <View className="flex-1 pr-2">
+          <Text
+            className="text-base font-semibold text-primary"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {title}
+          </Text>
+          <Text
+            className="text-xs text-muted font-normal"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {groupName} • {isSettlement ? `Settlement by ${paidBy}` : `Paid by ${paidBy}`}
+          </Text>
+        </View>
+      </View>
+      <View className="flex-col items-end justify-center">
+        <Text
+          className={`font-semibold text-base ${
+            isSettlement
+              ? "text-emerald-600"
+              : balanceType === "payable"
+              ? "text-red-500"
+              : "text-emerald-600"
+          }`}
+        >
+          {isSettlement
+            ? `₹${amount}`
+            : balanceType === "payable"
+            ? `-₹${amount}`
+            : `+₹${amount}`}
+        </Text>
+        <Text className="text-muted font-normal text-xs">{timeAgo} ago</Text>
+      </View>
+    </View>
+  );
 };

@@ -18,7 +18,7 @@ import {
 } from "@hugeicons/core-free-icons";
 
 type BalanceType = "receivable" | "payable" | "settled";
-type ExpenseCateogry =
+export type ExpenseCategory =
   | "Food"
   | "Travel"
   | "Grocery"
@@ -27,7 +27,19 @@ type ExpenseCateogry =
   | "Home"
   | "Party"
   | "Snack";
+
 type HugeIconType = typeof Home03Icon;
+
+export const expenseCategories = [
+  "Food",
+  "Travel",
+  "Grocery",
+  "Utility",
+  "Entertainment",
+  "Home",
+  "Party",
+  "Snack",
+] as const;
 
 export const groups: Group[] = [
   {
@@ -392,7 +404,7 @@ export interface Activity {
   amount: number;
   balanceType: BalanceType;
   timeAgo: string;
-  category: ExpenseCateogry;
+  category: ExpenseCategory;
 }
 
 export const getActivityIcon = {

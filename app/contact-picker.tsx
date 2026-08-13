@@ -17,7 +17,7 @@ export default function ContactPickerScreen() {
   const [search, setSearch] = useState("");
 
   const contacts = useContactStore((state) => state.contacts);
-  const toggleSelected = useContactStore((state) => state.toggleSelected)
+  const toggleSelected = useContactStore((state) => state.toggleSelected);
 
   const selectedMembers = contacts.filter((item) => item.isSelected);
 
@@ -33,8 +33,6 @@ export default function ContactPickerScreen() {
   const onAppContacts = filteredContacts.filter((item) => item.onApp);
 
   const inviteContacts = filteredContacts.filter((item) => !item.onApp);
-
-
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -69,7 +67,11 @@ export default function ContactPickerScreen() {
           paddingBottom: 40,
         }}
       >
-        <SearchBar value={search} onChangeText={setSearch} />
+        <SearchBar
+          value={search}
+          onChangeText={setSearch}
+          placeholder={"Search name or phone"}
+        />
 
         {selectedMembers.length > 0 && (
           <>

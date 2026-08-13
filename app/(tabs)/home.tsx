@@ -12,7 +12,7 @@ import {
   ArrowUpRight01Icon,
   Notification01Icon,
   ScanIcon,
-  UserGroup03Icon,
+  UserGroup02Icon,
   Wallet01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
@@ -123,17 +123,18 @@ export default function HomeScreen() {
         </View>
 
         {/* Actions sections */}
-        <View className="flex-row items-center justify-between gap-3 mb-8">
+        {/* <View className="flex-row items-center justify-between gap-3 mb-8">
           <TouchableOpacity
             className="bg-white p-4 flex-1  flex-col items-center justify-center gap-2 rounded-4xl border border-border shadow-md"
             activeOpacity={0.6}
+            onPress = {() => router.push('/add-expense')}
           >
             <View className="rounded-full w-10 h-10 bg-surface flex items-center justify-center">
               <HugeiconsIcon
                 icon={Add01Icon}
                 size={22}
                 color="#223543"
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
             </View>
             <Text className="text-primary font-medium text-sm">Add</Text>
@@ -148,7 +149,7 @@ export default function HomeScreen() {
                 icon={Wallet01Icon}
                 size={22}
                 color="#223543"
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
             </View>
             <Text className="text-primary font-medium text-sm">Settle</Text>
@@ -157,13 +158,14 @@ export default function HomeScreen() {
           <TouchableOpacity
             className="bg-white p-4 flex-col items-center justify-center gap-2 rounded-[28px] border border-border flex-1 shadow-md"
             activeOpacity={0.6}
+            onPress = {() => router.push("/(groups)/create")}
           >
             <View className="rounded-full w-10 h-10 bg-surface flex items-center justify-center">
               <HugeiconsIcon
-                icon={UserGroup03Icon}
+                icon={UserGroup02Icon}
                 size={22}
                 color="#223543"
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
             </View>
             <Text className="text-primary font-medium text-sm">Group</Text>
@@ -178,12 +180,12 @@ export default function HomeScreen() {
                 icon={ScanIcon}
                 size={22}
                 color="#223543"
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
             </View>
             <Text className="text-primary font-medium text-sm">Scan</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         {/* Group section */}
         <View className="mb-8">
@@ -191,7 +193,7 @@ export default function HomeScreen() {
             <Text className="uppercase font-semibold text-sm text-muted">
               Your Groups
             </Text>
-            <TouchableOpacity onPress={() => router.push("/(tabs)/groups")}>
+            <TouchableOpacity onPress={() => router.push("/(tabs)/group")}>
               <Text className="text-muted font-medium text-sm ">See all</Text>
             </TouchableOpacity>
           </View>

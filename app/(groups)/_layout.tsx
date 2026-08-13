@@ -5,6 +5,7 @@ export default function GroupLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="create" />
       <Stack.Screen name="[id]" />
+      <Stack.Screen name="[id]/add-expense" />
     </Stack>
   );
 }

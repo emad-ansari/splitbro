@@ -3,198 +3,215 @@ import { CardBackground } from "@/components/CardBackground";
 import { ExpenseCard } from "@/components/ExpenseCard";
 import { GroupCard } from "@/components/GroupCard";
 import { MemberCard } from "@/components/MemberCard";
-import { groups } from "@/utils/constants";
-import { pendingSettlements, recentActivities } from "@/utils/data";
+import { GroupSelectBottomSheet } from "@/components/expenses/GroupSelectBottomSheet";
+import { groups, PendingSettlement } from "@/utils/constants";
+import { contacts, pendingSettlements, recentActivities } from "@/utils/data";
+import BottomSheet from "@gorhom/bottom-sheet";
 import {
   Add01Icon,
   ArrowDownLeft01Icon,
   ArrowRight01Icon,
   ArrowUpRight01Icon,
   Notification01Icon,
-  ScanIcon,
+  UserAdd01Icon,
   UserGroup02Icon,
   Wallet01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
-
 import { useRouter } from "expo-router";
+import { useRef } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const groupSelectBottomSheetRef = useRef<BottomSheet>(null);
+
+  const handleOpenGroupSelect = () => {
+    groupSelectBottomSheetRef.current?.expand();
+  };
+
+  // Map contacts to add avatar URLs to pending settlements
+  const extendedPendingSettlements: (PendingSettlement & { avatarUri?: string })[] =
+    pendingSettlements.map((item) => {
+      const matchedContact = contacts.find(
+        (c) => c.name.toLowerCase() === item.username.toLowerCase()
+      );
+      return {
+        ...item,
+        avatarUri: matchedContact?.avatarUri,
+      };
+    });
+
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           padding: 20,
+          paddingBottom: 100,
         }}
       >
         {/* Header */}
-        <View className="flex-row  h-14 items-center justify-between mb-6">
-          <View className="flex-row items-center gap-2">
-            <View className="bg-surface border border-white  rounded-full h-14 w-14 items-center justify-center">
+        <View className="flex-row h-14 items-center justify-between mb-5">
+          <View className="flex-row items-center gap-3">
+            <View className="bg-surface border border-white rounded-full h-12 w-12 items-center justify-center shadow-xs">
               <Image
                 source={UserAvatar}
-                className="w-10 h-10 "
+                className="w-9 h-9"
                 resizeMode="contain"
               />
             </View>
             <View className="flex flex-col">
-              <Text className="font-semibold text-primary text-base">
+              <Text className="font-bold text-primary text-base leading-5">
                 Welcome back!
               </Text>
-              <Text className="text-sm font-regular text-muted">Mohammad</Text>
+              <Text className="text-xs font-normal text-muted">Mohammad</Text>
             </View>
           </View>
-          <View className="bg-surface flex items-center justify-center h-12 w-12 rounded-full border border-white relative">
+          <View className="bg-surface flex items-center justify-center h-11 w-11 rounded-full border border-white relative shadow-xs">
             <HugeiconsIcon
               icon={Notification01Icon}
               size={20}
               color="#223543"
               strokeWidth={1.5}
             />
-            <View className="absolute bg-red-500 h-3 w-3 rounded-full border border-white top-2 right-2" />
+            <View className="absolute bg-red-500 h-2.5 w-2.5 rounded-full border border-white top-2 right-2" />
           </View>
         </View>
 
         {/* Hero Card */}
-        <View className="relative flex-col gap-5 rounded-[32px] overflow-hidden p-6 mb-5">
+        <View className="relative flex-col gap-4 rounded-[32px] overflow-hidden p-6 mb-5 shadow-md">
           <CardBackground />
-          <View className="flex-col justify-between gap-2">
-            <Text className="uppercase text-secondary text-sm font-semibold tracking-wider">
-              Net balance
+          <View className="flex-col justify-between gap-1">
+            <Text className="uppercase text-secondary text-xs font-semibold tracking-wider">
+              Net Balance
             </Text>
-            <Text className="uppercase text-foreground text-4xl font-bold ">
-              ₹ 1,960
+            <Text className="uppercase text-foreground text-4xl font-bold">
+              +₹ 1,960
             </Text>
-            <Text className="text-secondary text-xs font-semibold">
+            <Text className="text-secondary text-xs font-medium mt-0.5">
               Across 4 active groups
             </Text>
           </View>
-          <View className="flex-row items-center justify-between gap-4">
-            <View className="flex-1  gap-2 bg-circle/50 p-4 rounded-3xl">
-              <View className="flex-row gap-1 items-center justify-start">
-                <HugeiconsIcon
-                  icon={ArrowDownLeft01Icon}
-                  size={16}
-                  color="#C2C9D0"
-                  strokeWidth={2.5}
-                />
-                <Text className="text-sm text-secondary font-semibold ">
-                  To Recieve
+
+          {/* Color-Coded Balance Breakdown */}
+          <View className="flex-row items-center justify-between gap-3">
+            <View className="flex-1 gap-1.5 bg-emerald-950/20 p-3.5 rounded-2xl border border-emerald-500/20">
+              <View className="flex-row gap-1.5 items-center justify-start">
+                <View className="w-5 h-5 rounded-full bg-emerald-500/20 items-center justify-center">
+                  <HugeiconsIcon
+                    icon={ArrowDownLeft01Icon}
+                    size={12}
+                    color="#10B981"
+                    strokeWidth={3}
+                  />
+                </View>
+                <Text className="text-xs text-emerald-400 font-semibold">
+                  To Receive
                 </Text>
               </View>
-              <Text className="text-foreground font-semibold text-2xl">
+              <Text className="text-foreground font-bold text-xl">
                 ₹3,420
               </Text>
             </View>
-            <View className="flex-1 gap-2 bg-circle/50 p-4 rounded-3xl">
-              <View className="flex-row gap-1 items-center justify-start">
-                <HugeiconsIcon
-                  icon={ArrowUpRight01Icon}
-                  size={16}
-                  color="#C2C9D0"
-                  strokeWidth={2.5}
-                />
-                <Text className="text-sm text-secondary font-semibold ">
+
+            <View className="flex-1 gap-1.5 bg-rose-950/20 p-3.5 rounded-2xl border border-rose-500/20">
+              <View className="flex-row gap-1.5 items-center justify-start">
+                <View className="w-5 h-5 rounded-full bg-rose-500/20 items-center justify-center">
+                  <HugeiconsIcon
+                    icon={ArrowUpRight01Icon}
+                    size={12}
+                    color="#F43F5E"
+                    strokeWidth={3}
+                  />
+                </View>
+                <Text className="text-xs text-rose-400 font-semibold">
                   To Pay
                 </Text>
               </View>
-              <Text className="text-foreground font-semibold text-2xl">
+              <Text className="text-foreground font-bold text-xl">
                 ₹1,460
               </Text>
             </View>
           </View>
+
           <TouchableOpacity
-            className="bg-background flex-row items-center justify-center rounded-full h-[50px]"
-            activeOpacity={0.8}
+            className="bg-white/95 flex-row items-center justify-center rounded-2xl h-12 gap-2 shadow-xs"
+            activeOpacity={0.85}
+            onPress={() => router.push("/(tabs)/groups/expense-history")}
           >
-            <Text className="text-primary font-semibold text-base">
-              Settle up
+            <Text className="text-primary font-semibold text-sm">
+              View All Settlements
             </Text>
             <HugeiconsIcon
               icon={ArrowRight01Icon}
-              size={18}
+              size={16}
+              color="#223543"
               strokeWidth={2.5}
             />
           </TouchableOpacity>
         </View>
 
-        {/* Actions sections */}
-        {/* <View className="flex-row items-center justify-between gap-3 mb-8">
+        {/* Sleek 3-Button Quick Actions Bar */}
+        <View className="flex-row items-center justify-between gap-3 mb-6">
           <TouchableOpacity
-            className="bg-white p-4 flex-1  flex-col items-center justify-center gap-2 rounded-4xl border border-border shadow-md"
-            activeOpacity={0.6}
-            onPress = {() => router.push('/add-expense')}
+            className="bg-primary p-3.5 flex-1 flex-row items-center justify-center gap-2 rounded-2xl shadow-sm"
+            activeOpacity={0.85}
+            onPress={handleOpenGroupSelect}
           >
-            <View className="rounded-full w-10 h-10 bg-surface flex items-center justify-center">
-              <HugeiconsIcon
-                icon={Add01Icon}
-                size={22}
-                color="#223543"
-                strokeWidth={1.5}
-              />
-            </View>
-            <Text className="text-primary font-medium text-sm">Add</Text>
+            <HugeiconsIcon
+              icon={Add01Icon}
+              size={18}
+              color="white"
+              strokeWidth={2}
+            />
+            <Text className="text-white font-semibold text-xs">
+              Add Expense
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="bg-white p-4 flex-1 flex-col items-center justify-center gap-2 rounded-4xl border border-border shadow-md"
-            activeOpacity={0.6}
+            className="bg-white border border-border p-3.5 flex-1 flex-row items-center justify-center gap-2 rounded-2xl shadow-xs"
+            activeOpacity={0.85}
+            onPress={() => router.push("/(tabs)/groups/expense-history")}
           >
-            <View className="rounded-full w-10 h-10 bg-surface flex items-center justify-center">
-              <HugeiconsIcon
-                icon={Wallet01Icon}
-                size={22}
-                color="#223543"
-                strokeWidth={1.5}
-              />
-            </View>
-            <Text className="text-primary font-medium text-sm">Settle</Text>
+            <HugeiconsIcon
+              icon={Wallet01Icon}
+              size={18}
+              color="#223543"
+              strokeWidth={1.5}
+            />
+            <Text className="text-primary font-medium text-xs">
+              Settle Up
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="bg-white p-4 flex-col items-center justify-center gap-2 rounded-[28px] border border-border flex-1 shadow-md"
-            activeOpacity={0.6}
-            onPress = {() => router.push("/(groups)/create")}
+            className="bg-white border border-border p-3.5 flex-1 flex-row items-center justify-center gap-2 rounded-2xl shadow-xs"
+            activeOpacity={0.85}
+            onPress={() => router.push("/(groups)/create")}
           >
-            <View className="rounded-full w-10 h-10 bg-surface flex items-center justify-center">
-              <HugeiconsIcon
-                icon={UserGroup02Icon}
-                size={22}
-                color="#223543"
-                strokeWidth={1.5}
-              />
-            </View>
-            <Text className="text-primary font-medium text-sm">Group</Text>
+            <HugeiconsIcon
+              icon={UserGroup02Icon}
+              size={18}
+              color="#223543"
+              strokeWidth={1.5}
+            />
+            <Text className="text-primary font-medium text-xs">
+              New Group
+            </Text>
           </TouchableOpacity>
+        </View>
 
-          <TouchableOpacity
-            className="bg-white p-4 flex-col items-center justify-center gap-2 rounded-[28px] border border-border flex-1 shadow-md"
-            activeOpacity={0.6}
-          >
-            <View className="rounded-full w-10 h-10 bg-surface flex items-center justify-center">
-              <HugeiconsIcon
-                icon={ScanIcon}
-                size={22}
-                color="#223543"
-                strokeWidth={1.5}
-              />
-            </View>
-            <Text className="text-primary font-medium text-sm">Scan</Text>
-          </TouchableOpacity>
-        </View> */}
-
-        {/* Group section */}
-        <View className="mb-8">
-          <View className="flex-row items-center justify-between mb-5">
-            <Text className="uppercase font-semibold text-sm text-muted">
+        {/* Group Section (Horizontal Carousel with fixed width cards) */}
+        <View className="mb-6">
+          <View className="flex-row items-center justify-between mb-3">
+            <Text className="uppercase font-semibold text-xs tracking-wider text-muted">
               Your Groups
             </Text>
             <TouchableOpacity onPress={() => router.push("/(tabs)/group")}>
-              <Text className="text-muted font-medium text-sm ">See all</Text>
+              <Text className="text-primary font-semibold text-xs">See all</Text>
             </TouchableOpacity>
           </View>
           <ScrollView
@@ -202,30 +219,30 @@ export default function HomeScreen() {
             horizontal
             contentContainerStyle={{
               gap: 12,
+              paddingRight: 10,
             }}
-            pagingEnabled
-            decelerationRate="fast"
-            snapToAlignment="start"
           >
             {groups.map((group) => (
-              <GroupCard key={group.id} group={group} />
+              <View key={group.id} className="w-[285px]">
+                <GroupCard group={group} />
+              </View>
             ))}
           </ScrollView>
         </View>
 
-        {/*  Recent Activity section */}
-        <View className="mb-8">
-          <View className="flex-row items-center justify-between mb-5">
-            <Text className="uppercase font-semibold text-sm text-muted">
+        {/* Recent Activity section */}
+        <View className="mb-6">
+          <View className="flex-row items-center justify-between mb-3">
+            <Text className="uppercase font-semibold text-xs tracking-wider text-muted">
               Recent Activity
             </Text>
-            <TouchableOpacity>
-              <Text className="text-muted font-medium text-sm ">View all</Text>
+            <TouchableOpacity onPress={() => router.push("/(tabs)/groups/expense-history")}>
+              <Text className="text-primary font-semibold text-xs">View all</Text>
             </TouchableOpacity>
           </View>
 
-          <View className="flex gap-3">
-            {recentActivities.map((activity) => (
+          <View className="flex gap-2.5">
+            {recentActivities.slice(0, 4).map((activity) => (
               <ExpenseCard
                 key={activity.id}
                 id={activity.id}
@@ -241,26 +258,30 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Pending settlement */}
+        {/* Pending Settlements */}
         <View>
-          <View className="flex-row items-center justify-between mb-5">
-            <Text className="uppercase font-semibold text-sm text-muted tracking-wide">
-              Pending Settlements
+          <View className="flex-row items-center justify-between mb-3">
+            <Text className="uppercase font-semibold text-xs text-muted tracking-wider">
+              Pending Settlements ({extendedPendingSettlements.length})
             </Text>
           </View>
-          <View className="flex-col gap-3">
-            {pendingSettlements.map((item) => (
+          <View className="flex-col gap-2.5">
+            {extendedPendingSettlements.map((item) => (
               <MemberCard
                 key={item.id}
                 id={item.id}
                 username={item.username}
                 amount={item.amount}
                 balanceType={item.balanceType}
+                avatarUri={item.avatarUri}
               />
             ))}
           </View>
         </View>
       </ScrollView>
+
+      {/* Group Selection Bottom Sheet when tapping "+ Add Expense" from Home */}
+      <GroupSelectBottomSheet bottomSheetRef={groupSelectBottomSheetRef} />
     </SafeAreaView>
   );
 }

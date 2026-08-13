@@ -120,41 +120,31 @@ export default function AddExpenseScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       {/* header */}
-      <View className="flex-row items-center justify-between px-6 mt-4">
-        <View className="flex-row items-center gap-4">
+      <View className="flex-row items-center justify-between px-6 mt-3">
+        <View className="flex-row items-center gap-3">
           <TouchableOpacity
-            className="bg-surface p-3 rounded-full flex items-center justify-center"
+            className="bg-surface p-2.5 rounded-full flex items-center justify-center"
             activeOpacity={0.8}
             onPress={() => router.back()}
           >
-            <HugeiconsIcon icon={ArrowLeft01Icon} size={22} color="#294355" />
+            <HugeiconsIcon icon={ArrowLeft01Icon} size={20} color="#294355" />
           </TouchableOpacity>
-          <Text className="text-2xl font-semibold text-primary">
+          <Text className="text-xl font-bold text-primary">
             New Expense
           </Text>
-        </View>
-
-        <View className="">
-          <TouchableOpacity
-            className=""
-            activeOpacity={0.8}
-            onPress={handleCancelExpense}
-          >
-            <Text className="text-sm font-semibold text-muted">Cancel</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
       {/* Add amount section */}
-      <View className="mt-6 px-6 mb-8">
-        <Text className="text-muted uppercase font-medium text-center text-sm tracking-wider">
+      <View className="mt-4 px-6 mb-4">
+        <Text className="text-muted uppercase font-medium text-center text-xs tracking-wider">
           Amount
         </Text>
 
-        <View className="flex-row justify-center mt-2 items-baseline gap-2 ">
-          <Text className="text-2xl text-muted  font-medium">₹</Text>
+        <View className="flex-row justify-center mt-1 items-baseline gap-2">
+          <Text className="text-2xl text-muted font-medium">₹</Text>
           <TextInput
-            className="text-primary font-semibold text-[56px] w-[180px] mr-6"
+            className="text-primary font-bold text-[48px] w-[180px] mr-4"
             placeholder={isAmountFocused ? "" : "0"}
             placeholderTextColor={"#65747F"}
             keyboardType="number-pad"
@@ -167,7 +157,7 @@ export default function AddExpenseScreen() {
           />
         </View>
         <TextInput
-          className="border border-border h-[50px] rounded-3xl mt-2 px-4 text-primary text-center"
+          className="border border-border h-[46px] rounded-2xl mt-1 px-4 text-primary text-center bg-white"
           placeholder="eg. Dinner at Britto"
           placeholderTextColor={"#65747F"}
           keyboardType="default"
@@ -182,11 +172,11 @@ export default function AddExpenseScreen() {
       />
 
       {/* Paid by & Date section */}
-      <View className="flex-row items-center justify-between mt-6 px-6 gap-4">
+      <View className="flex-row items-center justify-between mt-4 px-6 gap-3">
         <View className="flex-1">
-          <Text className="text-muted text-sm font-medium">Paid by</Text>
+          <Text className="text-muted text-xs font-medium mb-1">Paid by</Text>
           <TouchableOpacity
-            className="flex-1 flex-row items-center justify-between mt-2 px-3 py-2 rounded-3xl border border-border h-14"
+            className="flex-1 flex-row items-center justify-between px-3 py-2 rounded-2xl border border-border h-12 bg-white"
             activeOpacity={0.9}
             onPress={handleOpenMemberListBottoSheet}
           >
@@ -194,7 +184,7 @@ export default function AddExpenseScreen() {
               <Avatar
                 name={paidBy ? paidBy.name : "You"}
                 avatarUri={paidBy?.avatarUri}
-                size={32}
+                size={28}
               />
 
               <Text
@@ -206,21 +196,21 @@ export default function AddExpenseScreen() {
               </Text>
             </View>
 
-            <HugeiconsIcon icon={ArrowDown01Icon} size={22} color="#65747F" />
+            <HugeiconsIcon icon={ArrowDown01Icon} size={18} color="#65747F" />
           </TouchableOpacity>
         </View>
 
         <View className="flex-1">
-          <Text className="text-muted text-sm font-medium">Date</Text>
+          <Text className="text-muted text-xs font-medium mb-1">Date</Text>
           <TouchableOpacity
-            className="flex-row items-center justify-between mt-2 px-3 py-2 rounded-3xl border border-border h-14"
+            className="flex-row items-center justify-between px-3 py-2 rounded-2xl border border-border h-12 bg-white"
             activeOpacity={0.9}
             onPress={handleOpenDatePickerBottomSheet}
           >
-            <View className="flex-row gap-2 items-center ">
+            <View className="flex-row gap-2 items-center">
               <HugeiconsIcon
                 icon={Calendar02Icon}
-                size={22}
+                size={18}
                 color="#65747F"
                 strokeWidth={2}
               />
@@ -230,33 +220,32 @@ export default function AddExpenseScreen() {
               </Text>
             </View>
 
-            <HugeiconsIcon icon={ArrowDown01Icon} size={22} color="#65747F" />
+            <HugeiconsIcon icon={ArrowDown01Icon} size={18} color="#65747F" />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/*Split between section  */}
-      <View className="flex-1 px-6 mt-6 mb-4">
-        <View className="flex-row items-center justify-between mb-3">
-          <Text className=" uppercase tracking-wider text-sm font-medium text-muted">
+      {/* Split between section */}
+      <View className="flex-1 px-6 mt-4 mb-2">
+        <View className="flex-row items-center justify-between mb-2">
+          <Text className="uppercase tracking-wider text-xs font-semibold text-muted">
             Split Between
           </Text>
-          <Text className="  tracking-wider text-sm font-normal text-muted">
+          <Text className="tracking-wider text-xs font-normal text-muted">
             {selectedMembers.length} • selected
           </Text>
         </View>
 
         <ScrollView
-          contentContainerStyle={{ padding: 20, gap: 10, elevation: 2 }}
+          contentContainerStyle={{ paddingVertical: 4, gap: 2 }}
           showsVerticalScrollIndicator={false}
-          className="border border-border rounded-3xl"
         >
           {members.map((member) => (
             <MemberItem
               key={member.id}
               name={member.name}
               avatar={member.avatarUri}
-              avatarSize={40}
+              avatarSize={36}
               selected={selectedMembers.some((m) => m.id === member.id)}
               onSelect={() => handleSelectMember(member)}
             />
@@ -264,14 +253,14 @@ export default function AddExpenseScreen() {
         </ScrollView>
       </View>
 
-      <View className="fixed bottom-0 left-0 right-0 h-24 px-6">
+      <View className="px-6 pb-6 pt-2">
         <TouchableOpacity
-          className={`flex-row items-center justify-center h-[50px] px-4 py-3 rounded-3xl mt-2 ${canSave ? "bg-primary" : "bg-gray-400"}`}
+          className={`flex-row items-center justify-center h-[50px] px-4 py-3 rounded-2xl ${canSave ? "bg-primary" : "bg-gray-300"}`}
           activeOpacity={0.9}
           onPress={handleExpenseSave}
           disabled={!canSave}
         >
-          <Text className={`text-md font-medium text-white`}>Save Expense</Text>
+          <Text className={`text-base font-semibold text-white`}>Save Expense</Text>
         </TouchableOpacity>
       </View>
 

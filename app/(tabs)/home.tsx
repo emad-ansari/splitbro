@@ -3,32 +3,29 @@ import { CardBackground } from "@/components/CardBackground";
 import { ExpenseCard } from "@/components/ExpenseCard";
 import { GroupCard } from "@/components/GroupCard";
 import { MemberCard } from "@/components/MemberCard";
-import { GroupSelectBottomSheet } from "@/components/expenses/GroupSelectBottomSheet";
+import { useModalStore } from "@/store/useModalStore";
 import { groups, PendingSettlement } from "@/utils/constants";
 import { contacts, pendingSettlements, recentActivities } from "@/utils/data";
-import BottomSheet from "@gorhom/bottom-sheet";
 import {
   Add01Icon,
   ArrowDownLeft01Icon,
   ArrowRight01Icon,
   ArrowUpRight01Icon,
   Notification01Icon,
-  UserAdd01Icon,
   UserGroup02Icon,
   Wallet01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import { useRouter } from "expo-router";
-import { useRef } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const groupSelectBottomSheetRef = useRef<BottomSheet>(null);
+  const openAddExpense = useModalStore((state) => state.openAddExpense);
 
   const handleOpenGroupSelect = () => {
-    groupSelectBottomSheetRef.current?.expand();
+    openAddExpense();
   };
 
   // Map contacts to add avatar URLs to pending settlements
@@ -279,9 +276,6 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
-
-      {/* Group Selection Bottom Sheet when tapping "+ Add Expense" from Home */}
-      <GroupSelectBottomSheet bottomSheetRef={groupSelectBottomSheetRef} />
     </SafeAreaView>
   );
 }

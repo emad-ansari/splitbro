@@ -1,6 +1,7 @@
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { Group, groupCategoryColors, groupIcon, groups } from "@/utils/constants";
+import { useModalStore } from "@/store/useModalStore";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
@@ -14,9 +15,11 @@ export const GroupSelectBottomSheet = ({
   bottomSheetRef,
 }: GroupSelectBottomSheetProps) => {
   const router = useRouter();
+  const closeAddExpense = useModalStore((state) => state.closeAddExpense);
   const snapPoints = useMemo(() => ["55%"], []);
 
   const handleSelectGroup = (group: Group) => {
+    closeAddExpense();
     bottomSheetRef.current?.close();
     router.push({
       pathname: "/(groups)/[id]/add-expense",
@@ -29,6 +32,11 @@ export const GroupSelectBottomSheet = ({
       ref={bottomSheetRef}
       index={-1}
       enablePanDownToClose
+      onChange={(index) => {
+        if (index === -1) {
+          closeAddExpense();
+        }
+      }}
       snapPoints={snapPoints}
       backdropComponent={RenderBackdrop}
       backgroundStyle={{

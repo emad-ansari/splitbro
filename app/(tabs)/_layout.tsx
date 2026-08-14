@@ -1,12 +1,15 @@
 import {
-  Activity01Icon,
+  Add01Icon,
+  Analytics01Icon,
   Home01Icon,
   User02Icon,
   UserGroup02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import * as Haptics from "expo-haptics";
 import { withLayoutContext } from "expo-router";
+import BottomSheet from "@gorhom/bottom-sheet";
 import { useEffect, useRef } from "react";
 import { Pressable, View } from "react-native";
 import Animated, {
@@ -17,28 +20,33 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { GroupSelectBottomSheet } from "@/components/expenses/GroupSelectBottomSheet";
+import { useModalStore } from "@/store/useModalStore";
 
 // ─── Tab Definitions ──────────────────────────────────────────────────────────
 const TABS = [
   { name: "home", label: "Home", icon: Home01Icon },
   { name: "group", label: "Groups", icon: UserGroup02Icon },
-  { name: "activity", label: "Activity", icon: Activity01Icon },
+  { name: "insights", label: "Insights", icon: Analytics01Icon },
   { name: "profile", label: "Profile", icon: User02Icon },
 ] as const;
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
-const BAR_BG = "#DDE8EE";
-const PILL_ACTIVE_BG = "#294355";
-const PILL_INACTIVE_BG = "rgba(255,255,255,0.7)";
-const ICON_ACTIVE = "#F8F9FA";
-const ICON_INACTIVE = "#65747F";
+const BAR_BG = "#162530";
+const BAR_BORDER = "rgba(255, 255, 255, 0.08)";
+const PILL_ACTIVE_BG = "#273D4D";
+const PILL_INACTIVE_BG = "transparent";
+const ICON_ACTIVE = "#FFFFFF";
+const ICON_INACTIVE = "#7C8E9B";
+const FAB_BG = "#294355";
+const FAB_BORDER = "rgba(255, 255, 255, 0.15)";
 
-const PILL_H = 56; // taller for a more premium feel
-const COMPACT_W = 56; // inactive pill width — equal to PILL_H so it's a perfect circle
-const EXPANDED_W = 122; // active pill width (icon zone + label + right padding)
+const PILL_H = 44;
+const COMPACT_W = 44; // Inactive circle tab item
+const EXPANDED_W = 104; // Active expanding tab item
 
-// Slow, premium-feeling spring
-const SPRING = { damping: 38, stiffness: 85, mass: 1.3 };
+// Snappy, organic spring
+const SPRING = { damping: 24, stiffness: 170, mass: 0.8 };
 
 // ─── Single Tab Item ──────────────────────────────────────────────────────────
 function TabItem({
@@ -53,6 +61,7 @@ function TabItem({
   const progress = useSharedValue(isFocused ? 1 : 0);
   const animWidth = useSharedValue(isFocused ? EXPANDED_W : COMPACT_W);
   const labelOpacity = useSharedValue(isFocused ? 1 : 0);
+  const scale = useSharedValue(1);
   const hasMounted = useRef(false);
 
   useEffect(() => {
@@ -67,20 +76,21 @@ function TabItem({
     if (isFocused) {
       animWidth.value = withSpring(EXPANDED_W, SPRING);
       progress.value = withSpring(1, SPRING);
-      labelOpacity.value = withTiming(1, { duration: 300 });
+      labelOpacity.value = withTiming(1, { duration: 200 });
     } else {
       labelOpacity.value = withTiming(0, { duration: 100 });
       animWidth.value = withSpring(COMPACT_W, SPRING);
       progress.value = withSpring(0, SPRING);
     }
-  }, [isFocused]);
+  }, [isFocused, animWidth, labelOpacity, progress]);
 
   const pillStyle = useAnimatedStyle(() => ({
     width: animWidth.value,
+    transform: [{ scale: scale.value }],
     backgroundColor: interpolateColor(
       progress.value,
       [0, 1],
-      [PILL_INACTIVE_BG, PILL_ACTIVE_BG],
+      [PILL_INACTIVE_BG, PILL_ACTIVE_BG]
     ),
   }));
 
@@ -88,62 +98,70 @@ function TabItem({
     opacity: labelOpacity.value,
   }));
 
+  const handlePressIn = () => {
+    scale.value = withSpring(0.92, { damping: 15, stiffness: 300 });
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+  };
+
+  const handlePress = () => {
+    Haptics.selectionAsync();
+    onPress();
+  };
+
   return (
     <Pressable
-      onPress={onPress}
+      onPress={handlePress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       accessibilityRole="tab"
       accessibilityState={{ selected: isFocused }}
+      style={{ alignItems: "center", justifyContent: "center" }}
     >
       <Animated.View
         style={[
           pillStyle,
           {
             height: PILL_H,
-            borderRadius: 999,
+            borderRadius: PILL_H / 2,
             flexDirection: "row",
             alignItems: "center",
-            overflow: "hidden", // clips label naturally as pill contracts
+            overflow: "hidden",
           },
         ]}
       >
-        {/*
-				  ── Icon zone: always COMPACT_W wide & PILL_H tall ──
-				  When pill = COMPACT_W, this zone fills 100% → icon is perfectly centered.
-				  When pill = EXPANDED_W, this zone is the left portion → label fills the right.
-				  NO gap or sibling text here affecting centering.
-				*/}
+        {/* Icon Zone */}
         <View
           style={{
             width: COMPACT_W,
             height: PILL_H,
             alignItems: "center",
             justifyContent: "center",
-            flexShrink: 0, // never compress the icon zone
+            flexShrink: 0,
           }}
         >
           <HugeiconsIcon
             icon={tab.icon}
             size={20}
             color={isFocused ? ICON_ACTIVE : ICON_INACTIVE}
-            strokeWidth={1.5}
+            strokeWidth={isFocused ? 2 : 1.6}
           />
         </View>
 
-        {/*
-				  ── Label: lives to the right of the icon zone ──
-				  Clipped by overflow:hidden when pill is at COMPACT_W.
-				  paddingRight gives breathing room on the right side.
-				*/}
+        {/* Dynamic Label */}
         <Animated.Text
           style={[
             labelStyle,
             {
               color: ICON_ACTIVE,
-              fontSize: 13,
+              fontSize: 12.5,
               fontWeight: "600",
-              letterSpacing: 0.1,
-              marginLeft: -12, // ← pulls text into the icon zone's unused space
-              paddingRight: 16,
+              fontFamily: "GeistSemiBold",
+              letterSpacing: 0.2,
+              marginLeft: -6,
+              paddingRight: 14,
               flexShrink: 1,
             },
           ]}
@@ -156,33 +174,112 @@ function TabItem({
   );
 }
 
-// ─── Custom Tab Bar ───────────────────────────────────────────────────────────
-function CustomTabBar({ state, navigation }: any) {
+// ─── Floating Quick-Add Action Button ─────────────────────────────────────────
+function QuickAddButton({ onPress }: { onPress: () => void }) {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.9, { damping: 15, stiffness: 300 });
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+  };
+
+  const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onPress();
+  };
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      accessibilityRole="button"
+      accessibilityLabel="Add Expense"
+      style={{ alignItems: "center", justifyContent: "center" }}
+    >
+      <Animated.View
+        style={[
+          animatedStyle,
+          {
+            width: 52,
+            height: 52,
+            borderRadius: 26,
+            backgroundColor: FAB_BG,
+            borderWidth: 1,
+            borderColor: FAB_BORDER,
+            alignItems: "center",
+            justifyContent: "center",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.28,
+            shadowRadius: 12,
+            elevation: 10,
+          },
+        ]}
+      >
+        <HugeiconsIcon
+          icon={Add01Icon}
+          size={24}
+          color="#FFFFFF"
+          strokeWidth={2.4}
+        />
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+// ─── Custom Floating Tab Bar ──────────────────────────────────────────────────
+function CustomTabBar({
+  state,
+  navigation,
+  onOpenAddExpense,
+}: {
+  state: any;
+  navigation: any;
+  onOpenAddExpense: () => void;
+}) {
   const insets = useSafeAreaInsets();
 
   return (
-    // Outer wrapper: transparent — no white strip, pill floats cleanly
     <View
       style={{
-        paddingBottom: insets.bottom + 10,
-        paddingTop: 10,
-        paddingHorizontal: 20,
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        paddingBottom: Math.max(insets.bottom, 12),
+        paddingTop: 8,
+        paddingHorizontal: 16,
         backgroundColor: "transparent",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 10,
       }}
+      pointerEvents="box-none"
     >
-      {/* Floating pill container — single background, no double layers */}
+      {/* 1. Floating Navigation Island (Snug fit with tight padding & gaps) */}
       <View
         style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-evenly",
           backgroundColor: BAR_BG,
           borderRadius: 999,
-          paddingVertical: 5,
-          shadowColor: "#1A2E3B",
+          borderWidth: 1,
+          borderColor: BAR_BORDER,
+          flexDirection: "row",
+          alignItems: "center",
+          padding: 4,
+          gap: 4,
+          shadowColor: "#0D1820",
           shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.12,
-          shadowRadius: 20,
+          shadowOpacity: 0.35,
+          shadowRadius: 16,
           elevation: 10,
         }}
       >
@@ -212,6 +309,9 @@ function CustomTabBar({ state, navigation }: any) {
           );
         })}
       </View>
+
+      {/* 2. Floating Quick-Add Action Button (Right) */}
+      <QuickAddButton onPress={onOpenAddExpense} />
     </View>
   );
 }
@@ -221,16 +321,34 @@ const { Navigator } = createMaterialTopTabNavigator();
 const Tabs: any = withLayoutContext(Navigator);
 
 export default function TabsLayout() {
+  const groupSelectBottomSheetRef = useRef<BottomSheet>(null);
+  const isAddExpenseOpen = useModalStore((state) => state.isAddExpenseOpen);
+  const openAddExpense = useModalStore((state) => state.openAddExpense);
+
+  useEffect(() => {
+    if (isAddExpenseOpen) {
+      groupSelectBottomSheetRef.current?.expand();
+    }
+  }, [isAddExpenseOpen]);
+
   return (
-    <Tabs
-      tabBarPosition="bottom"
-      tabBar={(props: any) => <CustomTabBar {...props} />}
-      screenOptions={{ swipeEnabled: false, lazy: true }}
-    >
-      <Tabs.Screen name="home" />
-      <Tabs.Screen name="group" />
-      <Tabs.Screen name="activity" />
-      <Tabs.Screen name="profile" />
-    </Tabs>
+    <View style={{ flex: 1, backgroundColor: "#F8F9FA" }}>
+      <Tabs
+        tabBarPosition="bottom"
+        tabBar={(props: any) => (
+          <CustomTabBar {...props} onOpenAddExpense={openAddExpense} />
+        )}
+        screenOptions={{ swipeEnabled: false, lazy: true }}
+      >
+        <Tabs.Screen name="home" />
+        <Tabs.Screen name="group" />
+        <Tabs.Screen name="insights" />
+        <Tabs.Screen name="profile" />
+      </Tabs>
+
+      {/* Global Quick Add Expense Bottom Sheet */}
+      <GroupSelectBottomSheet bottomSheetRef={groupSelectBottomSheetRef} />
+    </View>
   );
 }
+

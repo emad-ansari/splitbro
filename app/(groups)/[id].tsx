@@ -301,6 +301,10 @@ export default function GroupDetails() {
             icon={UserAdd01Icon}
             title="Add Member"
             description="Invite someone to join"
+            onPress={() => {
+              bottomSheetRef.current?.close();
+              router.push("/contact-picker");
+            }}
           />
 
           <ActionItem
@@ -309,7 +313,7 @@ export default function GroupDetails() {
             description="See all group expenses"
             onPress={() => {
               bottomSheetRef.current?.close();
-              router.push("/(tabs)/groups/expense-history");
+              router.push("/expense-history");
             }}
           />
 

@@ -171,7 +171,7 @@ export default function HomeScreen() {
           <TouchableOpacity
             className="bg-white border border-border p-3.5 flex-1 flex-row items-center justify-center gap-2 rounded-2xl shadow-xs"
             activeOpacity={0.85}
-            onPress={() => router.push("/(tabs)/groups/expense-history")}
+            onPress={() => router.push("/(groups)/expense-history")}
           >
             <HugeiconsIcon
               icon={Wallet01Icon}
@@ -233,7 +233,7 @@ export default function HomeScreen() {
             <Text className="uppercase font-semibold text-xs tracking-wider text-muted">
               Recent Activity
             </Text>
-            <TouchableOpacity onPress={() => router.push("/(tabs)/groups/expense-history")}>
+            <TouchableOpacity onPress={() => router.push("/(groups)/expense-history")}>
               <Text className="text-primary font-semibold text-xs">View all</Text>
             </TouchableOpacity>
           </View>

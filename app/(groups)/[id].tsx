@@ -2,6 +2,10 @@ import FlatmateIcon from "@/assets/icons/house.png";
 import { RenderBackdrop } from "@/components/BottomSheetRenderBackdrop";
 import { CardBackground } from "@/components/CardBackground";
 import { ExpenseCard } from "@/components/ExpenseCard";
+import {
+  SettleUpBottomSheet,
+  SettleUpTarget,
+} from "@/components/expenses/SettleUpBottomSheet";
 import { MemberCard } from "@/components/MemberCard";
 import { groups, PendingSettlement } from "@/utils/constants";
 import { contacts, pendingSettlements, recentActivities } from "@/utils/data";
@@ -20,7 +24,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -29,6 +33,9 @@ export default function GroupDetails() {
   const { id } = useLocalSearchParams();
   const snapPoints = useMemo(() => ["50%"], []);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const settleUpBottomSheetRef = useRef<BottomSheet>(null);
+  const [selectedSettleTarget, setSelectedSettleTarget] =
+    useState<SettleUpTarget | null>(null);
 
   // Find active group data by ID or fallback to first group
   const currentGroup =

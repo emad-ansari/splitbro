@@ -6,6 +6,7 @@ export default function GroupLayout() {
       <Stack.Screen name="create" />
       <Stack.Screen name="[id]" />
       <Stack.Screen name="[id]/add-expense" />
+      <Stack.Screen name="expense-history" />
     </Stack>
   );
 }

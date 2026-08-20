@@ -8,6 +8,7 @@ import SportsIcon from "@/assets/icons/sports.png";
 import TripIcon from "@/assets/icons/trip.png";
 import {
   Car03Icon,
+  CheckmarkCircle02Icon,
   Coffee02Icon,
   Home03Icon,
   IdeaIcon,
@@ -26,7 +27,8 @@ export type ExpenseCategory =
   | "Entertainment"
   | "Home"
   | "Party"
-  | "Snack";
+  | "Snack"
+  | "Settlement";
 
 type HugeIconType = typeof Home03Icon;
 
@@ -416,6 +418,7 @@ export const getActivityIcon = {
   Home: Home03Icon,
   Party: PartyIcon,
   Snack: Coffee02Icon,
+  Settlement: CheckmarkCircle02Icon,
 };
 
 export const expenseCategory: { label: string; icon: HugeIconType }[] = [

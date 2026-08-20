@@ -1,7 +1,11 @@
 import { Activity, getActivityIcon } from "@/utils/constants";
 import { CheckmarkCircle02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
+
+interface ExpenseCardProps extends Activity {
+  onPress?: () => void;
+}
 
 export const ExpenseCard = ({
   title,
@@ -11,10 +15,11 @@ export const ExpenseCard = ({
   balanceType,
   timeAgo,
   category,
-}: Activity & { category?: any }) => {
+  onPress,
+}: ExpenseCardProps) => {
   const isSettlement = balanceType === "settled" || (category as string) === "Settlement";
 
-  return (
+  const Content = (
     <View className="flex-row items-center justify-between rounded-3xl p-4 border border-border bg-white shadow-sm">
       <View className="flex-row items-center gap-3 flex-1">
         <View
@@ -69,4 +74,14 @@ export const ExpenseCard = ({
       </View>
     </View>
   );
+
+  if (onPress) {
+    return (
+      <TouchableOpacity activeOpacity={0.75} onPress={onPress}>
+        {Content}
+      </TouchableOpacity>
+    );
+  }
+
+  return Content;
 };
